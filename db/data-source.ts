@@ -6,7 +6,7 @@ export const dataSourceOptions: DataSourceOptions = {
     port: 33061,
     username: 'root',
     password: 'root',
-    database: 'database_name',
+    database: 'HRM_System_dev',
     entities: ['dist/**/*.entity.js'],
     migrations: ['dist/db/migrations/*.js'],
     synchronize: false,
