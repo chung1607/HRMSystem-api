@@ -27,7 +27,7 @@ export class User {
     @Column({ default: false }) 
     is_verified: boolean;
 
-    @Column()
+    @Column({ nullable: true, default: null })
     refresh_token: string;
 
     @CreateDateColumn({ type: 'timestamp' })
