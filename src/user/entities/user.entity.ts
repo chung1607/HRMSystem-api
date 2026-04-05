@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Team_Members } from 'src/team_members/entities/team_members.entity';
+import { Teams } from 'src/teams/entities/teams.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToOne } from 'typeorm';
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -32,6 +34,12 @@ export class User {
 
     @Column({ nullable: true, default: null })
     refresh_token: string;
+
+    @OneToOne(() => Teams, (team) => team.owner)
+    ownedTeam: Teams;
+
+    @OneToOne(() => Team_Members, (member) => member.user)
+    teamMember: Team_Members;
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;
