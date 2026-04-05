@@ -28,6 +28,9 @@ export class User {
     is_verified: boolean;
 
     @Column({ nullable: true, default: null })
+    avatar: string;
+
+    @Column({ nullable: true, default: null })
     refresh_token: string;
 
     @CreateDateColumn({ type: 'timestamp' })

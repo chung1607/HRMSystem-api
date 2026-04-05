@@ -62,4 +62,8 @@ export class UserService {
     async remove(id: number): Promise<DeleteResult> {
         return await this.userRepository.delete(id);
     }
+
+    async updateAvatar(id: number, avatar: string): Promise<UpdateResult> {
+        return await this.userRepository.update(id, { avatar });
+    }
 }
