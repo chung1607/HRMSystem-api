@@ -30,4 +30,14 @@ export class AuthController {
     refreshToken(@Body() { refresh_token }): Promise<any> {
         return this.authService.refreshToken(refresh_token);
     }
+
+    @Post('send-otp')
+    sendOtp(@Body('phone') phone: string) {
+        return this.authService.sendOtp(phone);
+    }
+
+    @Post('verify-otp')
+    verifyOtp(@Body('phone') phone: string, @Body('otp') otp: string){
+        return this.authService.verifyOtp(phone, otp);
+    }
 }
