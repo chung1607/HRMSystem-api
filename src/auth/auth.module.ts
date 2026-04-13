@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { RedisModule } from 'src/redis/redis.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
@@ -16,7 +17,8 @@ import { ConfigModule } from '@nestjs/config';
         
       }
     ),
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    RedisModule
   ],
   controllers: [AuthController],
   providers: [AuthService]

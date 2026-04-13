@@ -7,13 +7,15 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private redisService: RedisService,
   ) {}
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
@@ -87,5 +89,42 @@ export class AuthService {
   private async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);
+  }
+
+  async sendOtp(phone: string) {
+    const user = await this.userRepository.findOne({
+      where: { phone }
+    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.redisService.set(`otp:${phone}`, otp, 60);
+    console.log(`OTP for ${phone}: ${otp}`);
+    return {
+      message: 'OTP sent successfully',
+    };
+  }
+
+  async verifyOtp(phone: string, otp: string) {
+    const savedOtp = await this.redisService.get((`otp:${phone}`));
+    if(!savedOtp) {
+      throw new HttpException('OTP expired', HttpStatus.BAD_REQUEST);
+    }
+    if(savedOtp !== otp) {
+      throw new HttpException('OTP incorrect', HttpStatus.BAD_REQUEST);
+    }
+    const user = await this.userRepository.findOne({
+      where: { phone }
+    });
+    if(!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    user.is_verified = true;
+    await this.userRepository.save(user);
+    await this.redisService.del(`otp:${phone}`);
+    return {
+      message: 'Verify OTP successfully',
+    }
   }
 }
