@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TeamMembersModule } from './team_members/team_members.module';
 import { TeamsModule } from './teams/teams.module';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
 
 
 @Module({
@@ -16,8 +18,9 @@ import { TeamsModule } from './teams/teams.module';
     UserModule,
     TeamMembersModule,
     TeamsModule,
+    RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RedisService],
 })
 export class AppModule {}
