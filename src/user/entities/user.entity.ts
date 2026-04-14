@@ -1,3 +1,4 @@
+import { TeamMember } from 'src/team_members/entities/team_members.entity';
 import { Teams } from '../../teams/entities/teams.entity';
 import {
   Entity,
@@ -41,6 +42,9 @@ export class User {
 
   @OneToOne(() => Teams, (team) => team.owner)
   ownedTeam: Teams;
+
+  @OneToOne(() => TeamMember, (member) => member.user)
+  teamMember: TeamMember;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
