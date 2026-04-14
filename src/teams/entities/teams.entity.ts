@@ -1,6 +1,12 @@
-import { Team_Members } from 'src/team_members/entities/team_members.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('teams')
 export class Teams {
@@ -26,9 +32,6 @@ export class Teams {
   })
   status: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
-
-  @OneToMany(() => Team_Members, (member) => member.team)
-  members: Team_Members[];
 }

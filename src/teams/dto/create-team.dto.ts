@@ -1,8 +1,10 @@
-// import { User } from "src/user/entities/user.entity";
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
-// export class CreateTeamDto {
-//     name: string;
-//     user: User;
-//     inviteCode: string;
-//     status: string;
-// }
+export class CreateTeamDto {
+    @IsNotEmpty()
+    @IsString()
+    name: string;
+
+    @IsOptional()
+    invite_code?: string;
+}
