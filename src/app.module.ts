@@ -9,6 +9,7 @@ import { TeamMembersModule } from './team_members/team_members.module';
 import { TeamsModule } from './teams/teams.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
+import { OwnerRequestsModule } from './owner-requests/owner-requests.module';
 
 
 @Module({
@@ -19,6 +20,7 @@ import { RedisModule } from './redis/redis.module';
     TeamMembersModule,
     TeamsModule,
     RedisModule,
+    OwnerRequestsModule,
   ],
   controllers: [AppController],
   providers: [AppService, RedisService],
