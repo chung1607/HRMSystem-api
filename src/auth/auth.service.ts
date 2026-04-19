@@ -1,13 +1,18 @@
 import { LoginUserDto } from './dto/login-user.dto';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { RedisService } from 'src/redis/redis.service';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +24,27 @@ export class AuthService {
   ) {}
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
+    const existed = await this.userRepository.findOne({
+      where: [
+        { username: registerUserDto.username },
+        { phone: registerUserDto.phone },
+      ],
+    });
+
+    if (existed) {
+      if (existed.username === registerUserDto.username) {
+        throw new BadRequestException('Username already exists');
+      }
+      if (existed.phone === registerUserDto.phone) {
+        throw new BadRequestException('Phone already exists');
+      }
+    }
+
     const hashedPassword = await this.hashPassword(registerUserDto.password);
+
     return await this.userRepository.save({
       ...registerUserDto,
-      refresh_token: 'refresh_token_string',
+      refresh_token: 'refresh_token',
       password: hashedPassword,
     });
   }
@@ -35,7 +57,10 @@ export class AuthService {
       ].filter(Boolean),
     });
     if (!user) {
-      throw new HttpException('Username or phone number is not exist', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Username or phone number is not exist',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -46,7 +71,7 @@ export class AuthService {
       throw new HttpException('Password is incorrect', HttpStatus.UNAUTHORIZED);
     }
 
-    const payload = { id: user.id, username: user.username };
+    const payload = { id: user.id, username: user.username, role: user.role };
 
     return this.generateToken(payload);
   }
@@ -58,12 +83,15 @@ export class AuthService {
       });
       const checkExistToken = await this.userRepository.findOneBy({
         username: verify.username,
-        refresh_token
-      })
+        refresh_token,
+      });
       if (checkExistToken) {
         return this.generateToken({ id: verify.id, username: verify.username });
-      }else {
-        throw new HttpException('Invalid refresh token', HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException(
+          'Invalid refresh token',
+          HttpStatus.BAD_REQUEST,
+        );
       }
     } catch {
       throw new HttpException('Invalid refresh token', HttpStatus.BAD_REQUEST);
@@ -78,7 +106,7 @@ export class AuthService {
     });
 
     // const hashedRefreshToken = await bcrypt.hash(refresh_token, 10);
-    
+
     await this.userRepository.update(
       { username: payload.username },
       { refresh_token: refresh_token },
@@ -93,7 +121,7 @@ export class AuthService {
 
   async sendOtp(phone: string) {
     const user = await this.userRepository.findOne({
-      where: { phone }
+      where: { phone },
     });
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -107,17 +135,17 @@ export class AuthService {
   }
 
   async verifyOtp(phone: string, otp: string) {
-    const savedOtp = await this.redisService.get((`otp:${phone}`));
-    if(!savedOtp) {
+    const savedOtp = await this.redisService.get(`otp:${phone}`);
+    if (!savedOtp) {
       throw new HttpException('OTP expired', HttpStatus.BAD_REQUEST);
     }
-    if(savedOtp !== otp) {
+    if (savedOtp !== otp) {
       throw new HttpException('OTP incorrect', HttpStatus.BAD_REQUEST);
     }
     const user = await this.userRepository.findOne({
-      where: { phone }
+      where: { phone },
     });
-    if(!user) {
+    if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     user.is_verified = true;
@@ -125,6 +153,6 @@ export class AuthService {
     await this.redisService.del(`otp:${phone}`);
     return {
       message: 'Verify OTP successfully',
-    }
+    };
   }
 }

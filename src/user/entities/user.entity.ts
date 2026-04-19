@@ -1,3 +1,4 @@
+import { OwnerRequest } from '../../owner-requests/entities/owner_request.entity';
 import { Teams } from '../../teams/entities/teams.entity';
 import {
   Entity,
@@ -5,6 +6,7 @@ import {
   Column,
   CreateDateColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 export enum UserRole {
@@ -41,6 +43,9 @@ export class User {
 
   @OneToOne(() => Teams, (team) => team.owner)
   ownedTeam: Teams;
+
+  @OneToMany(() => OwnerRequest, (req) => req.user)
+  ownerRequests: OwnerRequest[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
