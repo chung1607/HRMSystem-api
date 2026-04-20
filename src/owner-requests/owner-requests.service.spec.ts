@@ -234,6 +234,36 @@ describe('OwnerRequestsService', () => {
     });
   });
 
+  describe('findAll', () => {
+    it('should return list of owner requests', async () => {
+      const mockData = [
+        {
+          id: 1,
+          description: 'test 1',
+          status: OwnerRequestStatus.PENDING,
+          user: { id: 1, username: 'user1' },
+        },
+        {
+          id: 2,
+          description: 'test 2',
+          status: OwnerRequestStatus.APPROVED,
+          user: { id: 2, username: 'user2' },
+        },
+      ];
+
+      repo.find.mockResolvedValue(mockData as any);
+
+      const result = await service.findAll();
+
+      expect(repo.find).toHaveBeenCalledWith({
+        relations: ['user'],
+        order: { createdAt: 'DESC' },
+      });
+
+      expect(result).toEqual(mockData);
+    });
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
