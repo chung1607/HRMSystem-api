@@ -16,6 +16,8 @@ describe('OwnerRequestsService', () => {
   const mockRepo = {
     findOne: jest.fn(),
     save: jest.fn(),
+    create: jest.fn(),
+    find: jest.fn(),
     manager: {
       transaction: jest.fn(),
     },
@@ -142,6 +144,93 @@ describe('OwnerRequestsService', () => {
       await expect(service.rejectRequest(1)).rejects.toThrow(
         'Request already processed',
       );
+    });
+  });
+
+  describe('createRequest', () => {
+    it('should create request successfully', async () => {
+      const user = {
+        id: 1,
+        role: 'employee',
+      };
+
+      const dto = {
+        description: 'I want to be owner',
+      };
+
+      const mockRequest = {
+        id: 1,
+        description: dto.description,
+        user,
+        status: OwnerRequestStatus.PENDING,
+      };
+
+      repo.findOne.mockResolvedValue(null);
+      repo.create.mockReturnValue(mockRequest as any);
+      repo.save.mockResolvedValue(mockRequest as any);
+
+      const result = await service.createRequest(user as any, dto as any);
+
+      expect(repo.findOne).toHaveBeenCalledWith({
+        where: {
+          user: { id: user.id },
+          status: OwnerRequestStatus.PENDING,
+        },
+        relations: ['user'],
+      });
+
+      expect(repo.create).toHaveBeenCalledWith({
+        description: dto.description,
+        user,
+      });
+
+      expect(repo.save).toHaveBeenCalledWith(mockRequest);
+
+      expect(result).toEqual(mockRequest);
+    });
+
+    // user đã là owner
+    it('should throw if user is already owner', async () => {
+      const user = {
+        id: 1,
+        role: 'owner',
+      };
+
+      const dto = {
+        description: 'test',
+      };
+
+      await expect(
+        service.createRequest(user as any, dto as any),
+      ).rejects.toThrow(new BadRequestException('You are already an owner'));
+
+      expect(repo.findOne).not.toHaveBeenCalled();
+    });
+
+    // đã có request pending
+    it('should throw if user already has a pending request', async () => {
+      const user = {
+        id: 1,
+        role: 'employee',
+      };
+
+      const dto = {
+        description: 'test',
+      };
+
+      repo.findOne.mockResolvedValue({
+        id: 1,
+        status: OwnerRequestStatus.PENDING,
+      } as any);
+
+      await expect(
+        service.createRequest(user as any, dto as any),
+      ).rejects.toThrow(
+        new BadRequestException('You already have a pending request'),
+      );
+
+      expect(repo.create).not.toHaveBeenCalled();
+      expect(repo.save).not.toHaveBeenCalled();
     });
   });
 
