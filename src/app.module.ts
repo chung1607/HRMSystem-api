@@ -10,6 +10,7 @@ import { TeamsModule } from './teams/teams.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { OwnerRequestsModule } from './owner-requests/owner-requests.module';
+import { AdminModule } from './admin/admin.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { OwnerRequestsModule } from './owner-requests/owner-requests.module';
     TeamsModule,
     RedisModule,
     OwnerRequestsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService, RedisService],
