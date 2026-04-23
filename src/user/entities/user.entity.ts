@@ -35,6 +35,9 @@ export class User {
   @Column({ default: false })
   is_verified: boolean;
 
+  @Column({ default: true })
+  is_active: boolean;
+
   @Column({ nullable: true, default: null })
   avatar: string;
 
