@@ -28,7 +28,7 @@ export class UserService {
                 order: { created_at: 'DESC' },
                 take: items_per_page,
                 skip: skip,
-                select: ['id', 'username', 'password', 'phone', 'role','is_verified', 'created_at', 'updated_at']
+                select: ['id', 'username', 'password', 'phone', 'role', 'is_verified', 'is_active', 'created_at', 'updated_at']
             }
         );
         const lastPage = Math.ceil(total / items_per_page);

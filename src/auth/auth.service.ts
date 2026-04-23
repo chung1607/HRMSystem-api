@@ -63,6 +63,14 @@ export class AuthService {
       );
     }
 
+    if (!user.is_verified) {
+      throw new HttpException('Account is not verified', HttpStatus.FORBIDDEN);
+    }
+
+    if (!user.is_active) {
+      throw new HttpException('Account has been disabled', HttpStatus.FORBIDDEN);
+    }
+
     const isPasswordValid = await bcrypt.compare(
       loginUserDto.password,
       user.password,
