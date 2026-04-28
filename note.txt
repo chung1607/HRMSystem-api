@@ -1,0 +1,6 @@
+User -> Register -> OTP -> Verify -> Login
+Member -> Gửi lên ngày công -> Owner -> Check (update, delete,..) -> Insert DB
+
+
+ADMIN : View User Table and Teams Table
+OWNER : View TeamMember Table
