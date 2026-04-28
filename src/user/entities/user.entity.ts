@@ -1,3 +1,4 @@
+import { TeamMember } from 'src/team_members/entities/team_members.entity';
 import { OwnerRequest } from '../../owner-requests/entities/owner_request.entity';
 import { Teams } from '../../teams/entities/teams.entity';
 import {
@@ -49,6 +50,9 @@ export class User {
 
   @OneToMany(() => OwnerRequest, (req) => req.user)
   ownerRequests: OwnerRequest[];
+
+  @OneToOne(() => TeamMember, (teamMember) => teamMember.user)
+  teamMember: TeamMember;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
