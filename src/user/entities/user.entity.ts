@@ -1,4 +1,5 @@
 import { TeamMember } from 'src/team_members/entities/team_members.entity';
+import { OwnerRequest } from '../../owner-requests/entities/owner_request.entity';
 import { Teams } from '../../teams/entities/teams.entity';
 import {
   Entity,
@@ -6,6 +7,7 @@ import {
   Column,
   CreateDateColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 
 export enum UserRole {
@@ -34,6 +36,9 @@ export class User {
   @Column({ default: false })
   is_verified: boolean;
 
+  @Column({ default: true })
+  is_active: boolean;
+
   @Column({ nullable: true, default: null })
   avatar: string;
 
@@ -43,7 +48,10 @@ export class User {
   @OneToOne(() => Teams, (team) => team.owner)
   ownedTeam: Teams;
 
-  @OneToOne(() => TeamMember, (member) => member.user)
+  @OneToMany(() => OwnerRequest, (req) => req.user)
+  ownerRequests: OwnerRequest[];
+
+  @OneToOne(() => TeamMember, (teamMember) => teamMember.user)
   teamMember: TeamMember;
 
   @CreateDateColumn({ type: 'timestamp' })

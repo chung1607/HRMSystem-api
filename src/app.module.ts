@@ -9,6 +9,11 @@ import { TeamMembersModule } from './team_members/team_members.module';
 import { TeamsModule } from './teams/teams.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
+import { OwnerRequestsModule } from './owner-requests/owner-requests.module';
+import { AdminModule } from './admin/admin.module';
+import { WorkLogsModule } from './work-logs/work-logs.module';
+import { PaymentsModule } from './payments/payments.module';
+import { WorkLogsItemsModule } from './work-logs-items/work-logs-items.module';
 
 
 @Module({
@@ -19,6 +24,11 @@ import { RedisModule } from './redis/redis.module';
     TeamMembersModule,
     TeamsModule,
     RedisModule,
+    OwnerRequestsModule,
+    AdminModule,
+    WorkLogsModule,
+    PaymentsModule,
+    WorkLogsItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService, RedisService],
