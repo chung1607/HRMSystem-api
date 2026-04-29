@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Teams } from './entities/teams.entity';
-import { User } from 'src/user/entities/user.entity';
+import { User, UserRole } from 'src/user/entities/user.entity';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 
@@ -17,23 +21,33 @@ export class TeamsService {
   ) {}
 
   async create(createDto: CreateTeamDto, userId: number) {
-    const existed = await this.teamRepo.findOne({
-      where: { owner: { id: userId } },
-    });
-
-    if (existed) {
-      throw new BadRequestException('User already has a team');
-    }
-
     const user = await this.userRepo.findOne({
       where: { id: userId },
     });
 
-    const team = this.teamRepo.create({
-      ...createDto,
-      owner: user,
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.role !== UserRole.OWNER) {
+      throw new BadRequestException('Only owner can create team');
+    }
+
+    const existed = await this.teamRepo.exist({
+      where: { owner: { id: userId } },
     });
 
+    if (existed) {
+      throw new BadRequestException('Owner already has a team');
+    }
+
+    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    const team = this.teamRepo.create({
+      ...createDto,
+      invite_code: inviteCode,
+      owner: user,
+    });
     return await this.teamRepo.save(team);
   }
 

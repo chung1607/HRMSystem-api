@@ -12,7 +12,7 @@ export class TeamsController {
     @UseGuards(AuthGuard)
     @Post()
     create(@Body() dto: CreateTeamDto, @Req() req) {
-    const userId = req.user_data.id;;
+    const userId = req.user_data.id;
     return this.teamsService.create(dto, userId);
   }
 
