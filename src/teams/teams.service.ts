@@ -79,4 +79,27 @@ export class TeamsService {
 
     return await this.teamRepo.remove(team);
   }
+
+  async getMyTeam(ownerId: number) {
+    const team = await this.teamRepo.findOne({
+      where: { owner: { id: ownerId } },
+      relations: ['members', 'members.user'],
+    });
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+    return {
+      id: team.id,
+      name: team.name,
+      invite_code: team.invite_code,
+      status: team.status,
+      members: team.members.map((member) => ({
+        team_member_id: member.id,
+        user_id: member.user.id,
+        username: member.user.username,
+        phone: member.user.phone,
+        joined_at: member.joined_at,
+      })),
+    };
+  }
 }

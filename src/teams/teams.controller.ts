@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
@@ -6,12 +16,10 @@ import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('teams')
 export class TeamsController {
-    constructor(
-        private readonly teamsService: TeamsService,
-    ) {}
-    @UseGuards(AuthGuard)
-    @Post()
-    create(@Body() dto: CreateTeamDto, @Req() req) {
+  constructor(private readonly teamsService: TeamsService) {}
+  @UseGuards(AuthGuard)
+  @Post()
+  create(@Body() dto: CreateTeamDto, @Req() req) {
     const userId = req.user_data.id;
     return this.teamsService.create(dto, userId);
   }
@@ -19,6 +27,13 @@ export class TeamsController {
   @Get()
   findAll() {
     return this.teamsService.findAll();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('my-team')
+  getMyTeam(@Req() req) {
+    const ownerId = req.user_data.id;
+    return this.teamsService.getMyTeam(ownerId);
   }
 
   @Get(':id')
