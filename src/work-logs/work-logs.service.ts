@@ -71,4 +71,72 @@ export class WorkLogsService {
       await queryRunner.release();
     }
   }
+
+  // Get summary of work logs for all team members under the owner
+  async getMembersSummary(ownerId: number) {
+    const results = await this.dataSource
+      .getRepository(WorkLogItem)
+      .createQueryBuilder('item')
+      .innerJoin('item.workLog', 'workLog')
+      .innerJoin('workLog.teamMember', 'teamMember')
+      .innerJoin('teamMember.user', 'user')
+      .innerJoin('teamMember.team', 'team')
+      .innerJoin('team.owner', 'owner')
+      .select('teamMember.id', 'team_member_id')
+      .addSelect('user.username', 'username')
+      .addSelect('COUNT(DISTINCT workLog.id)', 'total_days')
+      .addSelect('SUM(item.quantity)', 'total_quantity')
+      .addSelect('SUM(item.total_amount)', 'total_amount')
+      .where('owner.id = :ownerId', { ownerId })
+      .groupBy('teamMember.id')
+      .addGroupBy('user.username')
+      .getRawMany();
+    return results;
+  }
+
+  // Get summary of work logs for a specific team member
+  async getMemberSummary(ownerId: number, teamMemberId: number) {
+    const member = await this.dataSource
+      .getRepository(TeamMember)
+      .createQueryBuilder('teamMember')
+      .innerJoinAndSelect('teamMember.user', 'user')
+      .innerJoinAndSelect('teamMember.team', 'team')
+      .innerJoinAndSelect('team.owner', 'owner')
+      .where('teamMember.id = :teamMemberId', {
+        teamMemberId,
+      })
+      .andWhere('owner.id = :ownerId', {
+        ownerId,
+      })
+      .getOne();
+
+    if (!member) {
+      throw new NotFoundException('Team member not found');
+    }
+
+    const logs = await this.dataSource
+      .getRepository(WorkLogItem)
+      .createQueryBuilder('item')
+      .innerJoin('item.workLog', 'workLog')
+      .innerJoin('workLog.teamMember', 'teamMember')
+      .select('workLog.work_date', 'work_date')
+      .addSelect('SUM(item.total_amount)', 'total_amount')
+      .where('teamMember.id = :teamMemberId', {
+        teamMemberId,
+      })
+      .groupBy('workLog.work_date')
+      .orderBy('workLog.work_date', 'ASC')
+      .getRawMany();
+
+    const grandTotal = logs.reduce(
+      (sum, item) => sum + Number(item.total_amount),
+      0,
+    );
+
+    return {
+      username: member.user.username,
+      work_logs: logs,
+      grand_total: grandTotal,
+    };
+  }
 }
