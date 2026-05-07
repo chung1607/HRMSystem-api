@@ -4,3 +4,8 @@ Member -> Gửi lên ngày công -> Owner -> Check (update, delete,..) -> Insert
 
 ADMIN : View User Table and Teams Table
 OWNER : View TeamMember Table
+
+BƯỚC 4: Xem tổng hợp (bạn vừa hỏi)
+API summary theo ngày
+BƯỚC 5: Thanh toán
+API payment

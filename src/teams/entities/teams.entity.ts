@@ -29,8 +29,8 @@ export class Teams {
 
   @Column({
     type: 'enum',
-    enum: ['pending', 'active', 'rejected'],
-    default: 'pending',
+    enum: ['active', 'inactive'],
+    default: 'active',
   })
   status: string;
 
