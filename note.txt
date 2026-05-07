@@ -5,6 +5,33 @@ Member -> Gửi lên ngày công -> Owner -> Check (update, delete,..) -> Insert
 ADMIN : View User Table and Teams Table
 OWNER : View TeamMember Table
 
+Relation DB
+
+User
+ ├── (1-1) Owner → Team
+ ├── (1-1) → TeamMember
+ └── (1-N) → OwnerRequest
+
+Team
+ ├── (1-1) → Owner (User)
+ └── (1-N) → TeamMember
+
+TeamMember
+ ├── (N-1) → User
+ ├── (N-1) → Team
+ ├── (1-N) → WorkLog
+ └── (1-N) → Payment
+
+WorkLog
+ ├── (N-1) → TeamMember
+ └── (1-N) → WorkLogItem
+
+WorkLogItem
+ └── (N-1) → WorkLog
+
+Payment
+ └── (N-1) → TeamMember
+ 
 BƯỚC 4: Xem tổng hợp (bạn vừa hỏi)
 API summary theo ngày
 BƯỚC 5: Thanh toán
