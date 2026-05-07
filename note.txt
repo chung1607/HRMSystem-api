@@ -31,3 +31,8 @@ WorkLogItem
 
 Payment
  └── (N-1) → TeamMember
+ 
+BƯỚC 4: Xem tổng hợp (bạn vừa hỏi)
+API summary theo ngày
+BƯỚC 5: Thanh toán
+API payment
