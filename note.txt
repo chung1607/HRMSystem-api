@@ -36,3 +36,12 @@ BƯỚC 4: Xem tổng hợp (bạn vừa hỏi)
 API summary theo ngày
 BƯỚC 5: Thanh toán
 API payment
+
+API
+GET /payroll	tổng hợp bảng lương
+GET /payroll/:memberId	bảng lương 1 nhân viên
+GET /payroll/unpaid	danh sách còn nợ
+GET /payroll/paid	danh sách đã thanh toán
+GET /payroll/summary	tổng tiền cần trả
+GET /payroll/monthly	payroll theo tháng
+GET /payroll/export	export excel payroll
