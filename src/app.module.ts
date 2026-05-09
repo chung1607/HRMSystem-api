@@ -14,6 +14,8 @@ import { AdminModule } from './admin/admin.module';
 import { WorkLogsModule } from './work-logs/work-logs.module';
 import { PaymentsModule } from './payments/payments.module';
 import { WorkLogsItemsModule } from './work-logs-items/work-logs-items.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { PayrollModule } from './payroll/payroll.module';
 
 
 @Module({
@@ -29,6 +31,8 @@ import { WorkLogsItemsModule } from './work-logs-items/work-logs-items.module';
     WorkLogsModule,
     PaymentsModule,
     WorkLogsItemsModule,
+    DashboardModule,
+    PayrollModule,
   ],
   controllers: [AppController],
   providers: [AppService, RedisService],
