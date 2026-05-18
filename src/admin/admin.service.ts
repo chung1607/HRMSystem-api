@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Payment } from 'src/payments/entities/payments.entity';
 import { Teams } from 'src/teams/entities/teams.entity';
 import { User, UserRole } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -12,6 +13,9 @@ export class AdminService {
 
     @InjectRepository(Teams)
     private readonly teamsRepository: Repository<Teams>,
+
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
   ) {}
 
   async getDashboardStats() {
@@ -54,5 +58,26 @@ export class AdminService {
     await this.userRepository.save(user);
 
     return { message: 'Role updated successfully' };
+  }
+
+  async getAdminPaymentChart(range: 'week' | 'month' | 'year') {
+    let interval = '7 DAY';
+
+    if (range === 'month') interval = '30 DAY';
+    if (range === 'year') interval = '12 MONTH';
+
+    return await this.paymentRepository
+      .createQueryBuilder('payment')
+      .innerJoin('payment.teamMember', 'teamMember')
+      .innerJoin('teamMember.team', 'team')
+      .innerJoin('team.owner', 'owner')
+      .select('owner.username', 'label')
+      .addSelect('SUM(payment.amount)', 'total')
+      .where(
+        `payment.payment_date >= DATE_SUB(CURDATE(), INTERVAL ${interval})`,
+      )
+      .groupBy('owner.id')
+      .orderBy('total', 'DESC')
+      .getRawMany();
   }
 }

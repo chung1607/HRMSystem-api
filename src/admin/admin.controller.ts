@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { PaymentChartDto } from 'src/payments/dto/payment-chart.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -9,6 +19,12 @@ export class AdminController {
   @Get('dashboard')
   getDashboard() {
     return this.adminService.getDashboardStats();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('dashboard/payment-chart')
+  getPaymentChart(@Query() query: PaymentChartDto) {
+    return this.adminService.getAdminPaymentChart(query.range);
   }
 
   @Patch('users/:id/disable')
