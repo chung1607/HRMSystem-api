@@ -70,13 +70,12 @@ export class AdminService {
       .createQueryBuilder('payment')
       .innerJoin('payment.teamMember', 'teamMember')
       .innerJoin('teamMember.team', 'team')
-      .innerJoin('team.owner', 'owner')
-      .select('owner.username', 'label')
+      .select('team.name', 'label')
       .addSelect('SUM(payment.amount)', 'total')
       .where(
         `payment.payment_date >= DATE_SUB(CURDATE(), INTERVAL ${interval})`,
       )
-      .groupBy('owner.id')
+      .groupBy('team.id')
       .orderBy('total', 'DESC')
       .getRawMany();
   }

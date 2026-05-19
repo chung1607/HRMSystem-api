@@ -16,6 +16,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { WorkLogsItemsModule } from './work-logs-items/work-logs-items.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { PayrollModule } from './payroll/payroll.module';
+import { OwnerSubscriptionsModule } from './owner-subscriptions/owner-subscriptions.module';
 
 
 @Module({
@@ -33,6 +34,7 @@ import { PayrollModule } from './payroll/payroll.module';
     WorkLogsItemsModule,
     DashboardModule,
     PayrollModule,
+    OwnerSubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService, RedisService],
