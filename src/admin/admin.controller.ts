@@ -27,6 +27,21 @@ export class AdminController {
     return this.adminService.getAdminPaymentChart(query.range);
   }
 
+  @Get('dashboard/sugarcane-team')
+  getSugarcaneByTeam() {
+    return this.adminService.getSugarcaneByTeam();
+  }
+
+  @Get('dashboard/subscription-status')
+  getSubscriptionStatusStats() {
+    return this.adminService.getSubscriptionStatusStats();
+  }
+
+  @Get('dashboard/team-performance')
+  getTeamPerformance() {
+    return this.adminService.getTeamPerformanceComparison();
+  }
+
   @Patch('users/:id/disable')
   disableUser(@Param('id') id: string) {
     return this.adminService.disableUser(Number(id));
