@@ -149,8 +149,11 @@ export class OwnerSubscriptionsService {
 
     const paidOwners = await this.subscriptionRepository
       .createQueryBuilder('subscription')
-      .select('COUNT(DISTINCT subscription.owner_id)', 'count')
-      .where('subscription.status = :status', { status: 'approved' })
+      .innerJoin('subscription.owner', 'owner')
+      .select('COUNT(DISTINCT owner.id)', 'count')
+      .where('subscription.status = :status', {
+        status: 'approved',
+      })
       .andWhere('MONTH(subscription.created_at) = MONTH(CURRENT_DATE())')
       .andWhere('YEAR(subscription.created_at) = YEAR(CURRENT_DATE())')
       .getRawOne();
