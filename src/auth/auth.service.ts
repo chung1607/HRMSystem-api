@@ -68,7 +68,10 @@ export class AuthService {
     }
 
     if (!user.is_active) {
-      throw new HttpException('Account has been disabled', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'Account has been disabled',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -79,9 +82,24 @@ export class AuthService {
       throw new HttpException('Password is incorrect', HttpStatus.UNAUTHORIZED);
     }
 
-    const payload = { id: user.id, username: user.username, role: user.role };
+    const payload = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    };
 
-    return this.generateToken(payload);
+    const tokens = await this.generateToken(payload);
+
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        username: user.username,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+      },
+    };
   }
 
   async refreshToken(refresh_token: string): Promise<any> {
